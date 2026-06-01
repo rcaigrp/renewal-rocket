@@ -115,3 +115,7 @@ Auditing existing project to understand current state before creating missing fi
 ## Turn 37 — Craft (2026-06-01 08:29 UTC)
 
 Auditing existing code to understand function signatures before writing main.py and acceptance_tests.py.
+
+## Turn 38 — Craft (2026-06-01 08:32 UTC)
+
+Auditing existing files to verify function signatures before implementing main.py. Reading client_manager.py and email_sender.py to ensure correct integration.
