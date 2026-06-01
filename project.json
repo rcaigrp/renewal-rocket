@@ -8,6 +8,6 @@
     "Tool writes success/failure to logs/renewal_log.txt"
   ],
   "meeting_budget": 3,
-  "meetings_held": 2,
-  "status": "active"
+  "meetings_held": 3,
+  "status": "complete"
 }
