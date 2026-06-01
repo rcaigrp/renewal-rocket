@@ -67,3 +67,7 @@ Budget exhausted at 8/5 meetings. Environmental constraints (missing tesseract-o
 ## Turn 18 — Manager (2026-06-01 05:18 UTC)
 
 Parked Local-Invoice-Parser due to budget exhaustion and unresolvable environment constraints for OCR testing.
+
+## Turn 19 — Manager (2026-06-01 05:22 UTC)
+
+Audited Local-Invoice-Parser. Budget exhausted (8/5). OCR environment constraints (missing tesseract-ocr in ephemeral containers) and brittle regex extraction prevent meeting acceptance criteria. Per rules, project is now parked.
