@@ -95,3 +95,7 @@ Auditing existing code to understand interfaces before building missing pieces. 
 ## Turn 32 — Craft (2026-06-01 08:13 UTC)
 
 Audit existing code to understand interfaces, then create main.py, acceptance_tests.py, update clients.csv with future dates, and ensure logs/ directory exists. This is meeting 2/3, so I must deliver working code and passing tests.
+
+## Turn 33 — Craft (2026-06-01 08:17 UTC)
+
+Auditing existing code in src/client_manager.py and src/email_sender.py to determine exact function signatures and interfaces before implementing src/main.py and acceptance_tests.py.
