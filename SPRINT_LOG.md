@@ -143,3 +143,7 @@ Auditing existing files to understand current state before making fixes. Need to
 ## Turn 4 — Craft (2026-06-01 09:18 UTC)
 
 Fixed root main.py to correctly import src.main and patched src/main.py to remove required=True from SMTP arguments, resolving the exit code 2 error. Added conditional checks for SMTP credentials during send mode to prevent crashes when running in dry-run or missing-config states. Updated log path to use absolute resolution for reliability.
+
+## Turn 5 — Craft (2026-06-01 09:21 UTC)
+
+Auditing existing code and running acceptance tests to identify failures. I'll read the key source files first, then execute the test suite.
