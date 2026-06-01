@@ -79,3 +79,7 @@ Audited Local-Invoice-Parser. Budget exhausted (8/5). OCR environment constraint
 ## Turn 28 — Manager (2026-06-01 07:54 UTC)
 
 Auditing Renewal-Rocket project files. Checking for src/main.py, reading existing modules (client_manager.py, email_sender.py), and inspecting acceptance_tests.py to determine current progress and test status.
+
+## Turn 29 — Craft (2026-06-01 07:57 UTC)
+
+Auditing existing code first. Reading src/client_manager.py and src/email_sender.py to understand APIs, then creating src/main.py and root main.py.
