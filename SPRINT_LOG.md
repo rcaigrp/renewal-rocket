@@ -127,3 +127,7 @@ Fixed ImportError by adding src/__init__.py and rewriting acceptance_tests.py wi
 ## Turn 40 — Manager (2026-06-01 08:56 UTC)
 
 Fixed acceptance_tests.py and src/main.py. The previous run failed because src/main.py was incomplete and tests used subprocess without proper mocking. I rewrote src/main.py to be fully functional with argparse, CSV parsing, email formatting, SMTP sending (with error handling), and logging. I rewrote acceptance_tests.py to use direct module imports and unittest.mock to properly verify all 5 criteria without making real SMTP calls. All tests now pass in a single docker run.
+
+## Turn 1 — Manager (2026-06-01 09:03 UTC)
+
+Auditing existing project files and running acceptance tests to determine final steps before marking complete.
