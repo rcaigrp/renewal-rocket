@@ -111,3 +111,7 @@ Auditing existing project files as instructed. Reading src/email_sender.py to in
 ## Turn 36 — Craft (2026-06-01 08:27 UTC)
 
 Auditing existing project to understand current state before creating missing files. Need to read client_manager.py, email_sender.py, data/clients.csv, and check logs/ directory existence.
+
+## Turn 37 — Craft (2026-06-01 08:29 UTC)
+
+Auditing existing code to understand function signatures before writing main.py and acceptance_tests.py.
