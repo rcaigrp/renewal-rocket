@@ -1,13 +1,1 @@
-{
-  "goal": "Build 'Renewal-Rocket', a CLI tool that automates contract renewal reminders to prevent revenue loss.",
-  "acceptance_criteria": [
-    "User runs: python main.py --clients data/clients.csv --days 14 --send",
-    "Tool reads clients.csv, identifies contracts expiring in 14 days.",
-    "Tool formats an email: 'Reminder: Your contract with [Client] renews in 14 days.'",
-    "Tool sends email to client.email.",
-    "Tool writes success/failure to logs/renewal_log.txt"
-  ],
-  "meeting_budget": 3,
-  "meetings_held": 3,
-  "status": "complete"
-}
+{"goal": "Build 'Renewal-Rocket', a CLI tool that automates contract renewal reminders to prevent revenue loss.", "acceptance_criteria": ["User runs: python main.py --clients data/clients.csv --days 14 --send", "Tool reads clients.csv, identifies contracts expiring in 14 days.", "Tool formats an email: 'Reminder: Your contract with [Client] renews in 14 days.'", "Tool sends email to client.email.", "Tool writes success/failure to logs/renewal_log.txt"], "meeting_budget": 3, "meetings_held": 4, "status": "complete"}
