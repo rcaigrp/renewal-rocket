@@ -1,46 +1,38 @@
 import csv
 from datetime import datetime, timedelta
 
-def read_clients(file_path, days):
+def read_clients(csv_path):
     clients = []
     seen_emails = set()
-    
-    try:
-        with open(file_path, 'r', newline='') as f:
-            reader = csv.DictReader(f)
-            required_columns = {'client_name', 'client_email', 'renewal_date'}
-            if not required_columns.issubset(set(reader.fieldnames or [])):
-                raise ValueError(f"CSV missing required columns: {required_columns - set(reader.fieldnames or [])}")
+    with open(csv_path, newline='') as f:
+        reader = csv.DictReader(f)
+        if not all(col in reader.fieldnames for col in ['client_name', 'client_email', 'renewal_date']):
+            raise ValueError("CSV missing required columns: client_name, client_email, renewal_date")
             
-            today = datetime.now().date()
-            cutoff_date = today + timedelta(days=days)
+        for row in reader:
+            email = row['client_email'].strip()
+            if email in seen_emails:
+                print(f"Warning: Duplicate email found: {email}")
+                continue
+            seen_emails.add(email)
             
-            for row in reader:
-                try:
-                    renewal_date = datetime.strptime(row['renewal_date'], '%Y-%m-%d').date()
-                except ValueError:
-                    print(f"Warning: Invalid date format for {row.get('client_name', 'Unknown')}, skipping.")
-                    continue
-                
+            try:
+                renewal_date = datetime.strptime(row['renewal_date'], '%Y-%m-%d')
+                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                 if renewal_date < today:
-                    print(f"Warning: Past date for {row['client_name']}, skipping.")
+                    print(f"Warning: Skipping past date for {row['client_name']}")
                     continue
-                
-                if renewal_date <= cutoff_date:
-                    email = row['client_email']
-                    if email in seen_emails:
-                        print(f"Warning: Duplicate email {email} for {row['client_name']}, skipping.")
-                        continue
-                    
-                    seen_emails.add(email)
-                    clients.append({
-                        'name': row['client_name'],
-                        'email': email,
-                        'renewal_date': renewal_date.isoformat()
-                    })
-    except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {file_path}")
-    except Exception as e:
-        raise ValueError(f"Error reading CSV: {e}")
-        
+                clients.append({
+                    'client_name': row['client_name'],
+                    'client_email': email,
+                    'renewal_date': renewal_date
+                })
+            except ValueError:
+                print(f"Warning: Invalid date format for {row['client_name']}")
+                continue
     return clients
+
+def filter_expiring_clients(clients, days):
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    target_date = today + timedelta(days=days)
+    return [c for c in clients if today <= c['renewal_date'] <= target_date]

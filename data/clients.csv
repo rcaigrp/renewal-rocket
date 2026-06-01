@@ -1,5 +1,5 @@
-name,email,contract_end_date
-Acme Corp,contact@acme.com,2025-01-15
-Beta Inc,info@beta.com,2025-06-01
-Gamma LLC,admin@gamma.com,2023-01-01
-Delta Co,sales@delta.com,2025-02-01
+client_name,client_email,renewal_date
+Acme Corp,contact@acme.com,2023-12-01
+Globex Inc,globex@example.com,2023-12-15
+Initech,info@initech.com,2023-12-20
+Umbrella Corp,umbrella@example.com,2024-01-05
