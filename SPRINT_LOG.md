@@ -19,3 +19,7 @@ Audited the Local-Invoice-Parser project. Confirmed budget exhaustion (8/5 meeti
 ## Turn 6 — Manager (2026-06-01 04:21 UTC)
 
 Audit complete. Budget exhausted (8/5). OCR dependencies (Tesseract) require system-level apt-get installs that conflict with isolated Python container constraints. Regex extraction for vendor/date/amount remains incomplete and fragile. Per Facilitator instructions, writing project.json with status='parked' to close this sprint.
+
+## Turn 7 — Craft (2026-06-01 04:24 UTC)
+
+Auditing existing code to understand why tests failed and fixing the linting error and test structure. The system reported 'NO TESTS FOUND' and a linting error on email_sender.py (likely a leftover). I will read the current files, then rewrite acceptance_tests.py to properly test the invoice parser logic without requiring system-level Tesseract, and fix any linting issues.
