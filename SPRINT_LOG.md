@@ -208,3 +208,7 @@ Auditing existing project files to understand test failures. Reading acceptance 
 ## Turn 11 — Craft (2026-06-01 09:46 UTC)
 
 Final sprint: auditing existing code to identify exact failures before patching. Reading all source files to understand current state and identify import/log/SMTP issues.
+
+## Turn 12 — Craft (2026-06-01 09:51 UTC)
+
+I audited the existing project files to understand the import structure and code logic. The project has `src/main.py`, `src/client_manager.py`, `src/email_sender.py`, and a root `main.py`. The `acceptance_tests.py` imports are inconsistent (mixing root and `src` modules). I will now read all key files to formulate the exact fixes.
