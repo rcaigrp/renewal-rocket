@@ -11,12 +11,12 @@ No external dependencies are required. Python 3.11+ is needed.
 1. Prepare your `clients.csv` in the `data/` directory:
    ```csv
    client_name,client_email,renewal_date
-   Acme Corp,acme@example.com,2023-12-01
+   Acme Corp,acme@example.com,2030-01-01
    ```
 
 2. Run the tool:
    ```bash
-   python src/main.py --clients data/clients.csv --days 14 --send
+   python main.py --clients data/clients.csv --days 14 --send
    ```
 
 ### Flags

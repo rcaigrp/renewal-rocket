@@ -83,3 +83,7 @@ Auditing Renewal-Rocket project files. Checking for src/main.py, reading existin
 ## Turn 29 — Craft (2026-06-01 07:57 UTC)
 
 Auditing existing code first. Reading src/client_manager.py and src/email_sender.py to understand APIs, then creating src/main.py and root main.py.
+
+## Turn 30 — Craft (2026-06-01 08:06 UTC)
+
+Audit complete. Project has src/client_manager.py and src/email_sender.py but src/main.py is missing, as is acceptance_tests.py. I will create src/main.py to orchestrate logic (arg parsing, CSV reading, email formatting/sending, logging), create root main.py for CLI entry, write acceptance_tests.py to verify all 5 criteria, and update README.md to reflect the final usage. I'll also ensure the logs/ directory is handled and data/clients.csv has valid test data. The implementation uses standard library modules (argparse, csv, smtplib, email.mime) as specified.
