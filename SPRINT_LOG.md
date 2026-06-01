@@ -131,3 +131,7 @@ Fixed acceptance_tests.py and src/main.py. The previous run failed because src/m
 ## Turn 1 — Manager (2026-06-01 09:03 UTC)
 
 Auditing existing project files and running acceptance tests to determine final steps before marking complete.
+
+## Turn 2 — Craft (2026-06-01 09:09 UTC)
+
+Reading existing source files to understand the argparse setup and fix the mandatory credential arguments so the acceptance command works without them.
