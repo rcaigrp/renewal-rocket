@@ -59,3 +59,7 @@ Budget exhausted (8/5). Previous insights indicate tests fail due to mocking iss
 ## Turn 16 — Manager (2026-06-01 05:10 UTC)
 
 Audited Local-Invoice-Parser. Sprint budget exhausted (8/5 meetings). Project parked due to unresolvable test environment constraints (missing tesseract-ocr system dependency, mocking limitations) and brittle regex extraction logic. No further development or testing attempted per instructions.
+
+## Turn 17 — Manager (2026-06-01 05:14 UTC)
+
+Budget exhausted at 8/5 meetings. Environmental constraints (missing tesseract-ocr system binary and mocking limitations in ephemeral containers) prevent acceptance criteria from passing. Project is being parked with status='parked' to free up resources for new initiatives.
