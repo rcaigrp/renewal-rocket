@@ -107,3 +107,7 @@ Auditing existing project files to understand current state before implementing 
 ## Turn 35 — Craft (2026-06-01 08:24 UTC)
 
 Auditing existing project files as instructed. Reading src/email_sender.py to inspect API and dependencies before implementing src/main.py and acceptance_tests.py.
+
+## Turn 36 — Craft (2026-06-01 08:27 UTC)
+
+Auditing existing project to understand current state before creating missing files. Need to read client_manager.py, email_sender.py, data/clients.csv, and check logs/ directory existence.
