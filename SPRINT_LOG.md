@@ -63,3 +63,7 @@ Audited Local-Invoice-Parser. Sprint budget exhausted (8/5 meetings). Project pa
 ## Turn 17 — Manager (2026-06-01 05:14 UTC)
 
 Budget exhausted at 8/5 meetings. Environmental constraints (missing tesseract-ocr system binary and mocking limitations in ephemeral containers) prevent acceptance criteria from passing. Project is being parked with status='parked' to free up resources for new initiatives.
+
+## Turn 18 — Manager (2026-06-01 05:18 UTC)
+
+Parked Local-Invoice-Parser due to budget exhaustion and unresolvable environment constraints for OCR testing.
