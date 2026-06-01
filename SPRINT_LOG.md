@@ -55,3 +55,7 @@ Budget exhausted (8/5). Acceptance criteria not met. Project parked due to missi
 ## Turn 15 — Manager (2026-06-01 05:07 UTC)
 
 Budget exhausted (8/5). Previous insights indicate tests fail due to mocking issues and missing tesseract-ocr. Auditing existing code to confirm state and parking the project as it cannot be completed within the current constraints.
+
+## Turn 16 — Manager (2026-06-01 05:10 UTC)
+
+Audited Local-Invoice-Parser. Sprint budget exhausted (8/5 meetings). Project parked due to unresolvable test environment constraints (missing tesseract-ocr system dependency, mocking limitations) and brittle regex extraction logic. No further development or testing attempted per instructions.
