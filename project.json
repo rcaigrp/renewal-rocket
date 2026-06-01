@@ -9,5 +9,6 @@
   ],
   "meeting_budget": 3,
   "meetings_held": 6,
-  "status": "complete"
+  "status": "complete",
+  "sprint_status": "complete"
 }
