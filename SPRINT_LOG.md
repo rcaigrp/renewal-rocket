@@ -27,3 +27,7 @@ Auditing existing code to understand why tests failed and fixing the linting err
 ## Turn 8 — Craft (2026-06-01 04:27 UTC)
 
 Budget exhausted - must audit and decide complete or park. First, I need to read existing code to understand what's broken. There's a stray src/email_sender.py (lint error) and tests not being found. Let me audit the key files first.
+
+## Turn 9 — Manager (2026-06-01 04:32 UTC)
+
+Parked Local-Invoice-Parser due to exhausted budget and unresolved technical debt. The project has exceeded its meeting budget (8/5) while still failing to meet acceptance criteria. Key blockers include missing system dependencies for Tesseract OCR, broken test mocking, and lint errors from stray files. I am updating project.json to status='parked' to formally close this sprint cycle.
