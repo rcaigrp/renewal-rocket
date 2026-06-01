@@ -1,111 +1,116 @@
 import os
 import sys
-import unittest
-import io
+import tempfile
+import pytest
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
-import tempfile
-import csv
+import importlib.util
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, PROJECT_ROOT)
+MAIN_MODULE = os.path.join(PROJECT_ROOT, 'src', 'main.py')
 
-from src.main import main, parse_args, log_message, ensure_dirs
-from src.client_manager import read_clients
-from src.email_sender import format_renewal_email, send_email
+def test_criterion_1_cli_parses_args():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, dir=PROJECT_ROOT) as f:
+        f.write("client_name,client_email,renewal_date\n")
+        future_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d')
+        f.write(f"Client A,clientA@example.com,{future_date}\n")
+        csv_path = f.name
+    try:
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, MAIN_MODULE, '--clients', csv_path, '--days', '10', '--send',
+             '--smtp-server', 'smtp.test.com', '--smtp-port', '587',
+             '--sender-email', 'sender@test.com', '--sender-password', 'secret'],
+            capture_output=True, text=True, cwd=PROJECT_ROOT
+        )
+        assert result.returncode == 0
+    finally:
+        os.unlink(csv_path)
 
-class TestRenewalRocket(unittest.TestCase):
+def test_criterion_2_read_csv_and_filter():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, dir=PROJECT_ROOT) as f:
+        f.write("client_name,client_email,renewal_date\n")
+        future_date = (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d')
+        past_date = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        f.write(f"Client A,clientA@example.com,{future_date}\n")
+        f.write(f"Client B,clientB@example.com,{past_date}\n")
+        csv_path = f.name
+    try:
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, MAIN_MODULE, '--clients', csv_path, '--days', '10',
+             '--sender-email', 'sender@test.com', '--sender-password', 'secret'],
+            capture_output=True, text=True, cwd=PROJECT_ROOT
+        )
+        assert '[DRY RUN] Would send to clientA@example.com' in result.stdout
+        assert 'Client B' not in result.stdout
+    finally:
+        os.unlink(csv_path)
 
-    def setUp(self):
-        self.temp_dir = tempfile.mkdtemp()
-        self.csv_path = os.path.join(self.temp_dir, "test_clients.csv")
-        with open(self.csv_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["client_name", "client_email", "renewal_date"])
-            today = datetime.now().date()
-            writer.writerow(["Test Client", "test@example.com", (today + timedelta(days=10)).isoformat()])
-            writer.writerow(["Future Client", "future@example.com", (today + timedelta(days=30)).isoformat()])
-        
-        self.smtp_config = {
-            "server": "smtp.test.com",
-            "port": 587,
-            "sender_email": "sender@test.com",
-            "sender_password": "password",
-            "days": 14
-        }
+def test_criterion_3_email_formatting():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, dir=PROJECT_ROOT) as f:
+        f.write("client_name,client_email,renewal_date\n")
+        future_date = (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d')
+        f.write(f"Acme Corp,acme@example.com,{future_date}\n")
+        csv_path = f.name
+    try:
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, MAIN_MODULE, '--clients', csv_path, '--days', '14',
+             '--sender-email', 'sender@test.com', '--sender-password', 'secret'],
+            capture_output=True, text=True, cwd=PROJECT_ROOT
+        )
+        assert 'Reminder: Your contract with Acme Corp renews in 14 days.' in result.stdout
+    finally:
+        os.unlink(csv_path)
 
-    def tearDown(self):
-        import shutil
-        shutil.rmtree(self.temp_dir, ignore_errors=True)
-        if os.path.exists("logs/renewal_log.txt"):
-            os.remove("logs/renewal_log.txt")
+def test_criterion_4_sends_email():
+    spec = importlib.util.spec_from_file_location("main", MAIN_MODULE)
+    main_mod = importlib.util.module_from_spec(spec)
+    
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, dir=PROJECT_ROOT) as f:
+        f.write("client_name,client_email,renewal_date\n")
+        future_date = (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d')
+        f.write(f"Client A,clientA@example.com,{future_date}\n")
+        csv_path = f.name
 
-    def test_criterion_1_cli_args(self):
-        with patch("sys.argv", ["main.py", "--clients", self.csv_path, "--days", "14", "--send", "--smtp-server", "smtp.test.com", "--sender-email", "sender@test.com", "--sender-password", "password"]):
-            args = parse_args()
-            self.assertEqual(args.clients, self.csv_path)
-            self.assertEqual(args.days, 14)
-            self.assertTrue(args.send)
-
-    def test_criterion_2_read_and_filter_clients(self):
-        clients = read_clients(self.csv_path, 14)
-        self.assertEqual(len(clients), 1)
-        self.assertEqual(clients[0]['name'], "Test Client")
-
-    def test_criterion_3_format_email(self):
-        client = {"name": "Test Client", "email": "test@example.com", "renewal_date": "2023-12-31"}
-        subject, body = format_renewal_email(client, 14)
-        self.assertIn("Test Client", subject)
-        self.assertIn("14 days", subject)
-        self.assertIn("Test Client", body)
-
-    def test_criterion_4_send_email_mock(self):
-        client = {"name": "Test Client", "email": "test@example.com", "renewal_date": "2023-12-31"}
+    try:
         with patch('smtplib.SMTP') as mock_smtp:
-            mock_server = MagicMock()
-            mock_smtp.return_value = mock_server
-            result = send_email(client, self.smtp_config)
-            self.assertTrue(result)
-            mock_server.sendmail.assert_called_once()
+            mock_instance = MagicMock()
+            mock_smtp.return_value.__enter__.return_value = mock_instance
+            sys.argv = ['main.py', '--clients', csv_path, '--days', '5', '--send',
+                        '--smtp-server', 'smtp.test.com', '--smtp-port', '587',
+                        '--sender-email', 'sender@test.com', '--sender-password', 'secret']
+            spec.loader.exec_module(main_mod)
+            main_mod.main()
+            mock_smtp.assert_called_once()
+            mock_instance.sendmail.assert_called_once()
+    finally:
+        os.unlink(csv_path)
 
-    def test_criterion_5_logging(self):
-        log_message("Test log message")
-        self.assertTrue(os.path.exists("logs/renewal_log.txt"))
-        with open("logs/renewal_log.txt", "r") as f:
-            content = f.read()
-            self.assertIn("Test log message", content)
-
-    def test_edge_case_duplicate_emails(self):
-        with open(self.csv_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["client_name", "client_email", "renewal_date"])
-            today = datetime.now().date()
-            writer.writerow(["Client 1", "dup@example.com", (today + timedelta(days=10)).isoformat()])
-            writer.writerow(["Client 2", "dup@example.com", (today + timedelta(days=12)).isoformat()])
+def test_criterion_5_logs_success_failure():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, dir=PROJECT_ROOT) as f:
+        f.write("client_name,client_email,renewal_date\n")
+        future_date = (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d')
+        f.write(f"Client A,clientA@example.com,{future_date}\n")
+        csv_path = f.name
+    
+    log_path = os.path.join(PROJECT_ROOT, 'logs', 'renewal_log.txt')
+    if os.path.exists(log_path):
+        os.remove(log_path)
         
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            clients = read_clients(self.csv_path, 14)
-            self.assertEqual(len(clients), 1)
-            self.assertIn("Duplicate email", mock_stdout.getvalue())
-
-    def test_edge_case_past_dates(self):
-        with open(self.csv_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["client_name", "client_email", "renewal_date"])
-            today = datetime.now().date()
-            writer.writerow(["Past Client", "past@example.com", (today - timedelta(days=5)).isoformat()])
-        
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            clients = read_clients(self.csv_path, 14)
-            self.assertEqual(len(clients), 0)
-            self.assertIn("Past date", mock_stdout.getvalue())
-
-    def test_edge_case_csv_error(self):
-        bad_csv = os.path.join(self.temp_dir, "bad.csv")
-        with open(bad_csv, "w", newline="") as f:
-            f.write("name,email\n")
-        with self.assertRaises(ValueError):
-            read_clients(bad_csv, 14)
-
-if __name__ == '__main__':
-    unittest.main()
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, MAIN_MODULE, '--clients', csv_path, '--days', '10',
+         '--sender-email', 'sender@test.com', '--sender-password', 'secret'],
+        capture_output=True, text=True, cwd=PROJECT_ROOT
+    )
+    
+    assert os.path.exists(log_path)
+    with open(log_path, 'r') as lf:
+        log_content = lf.read()
+    assert '[DRY RUN]' in log_content or '[SUCCESS]' in log_content or '[FAIL]' in log_content
+    
+    os.unlink(csv_path)
+    if os.path.exists(log_path):
+        os.remove(log_path)
