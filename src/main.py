@@ -11,91 +11,69 @@ def main():
     parser = argparse.ArgumentParser(description="Renewal-Rocket: Automate contract renewal reminders.")
     parser.add_argument('--clients', required=True, help='Path to the CSV file.')
     parser.add_argument('--days', type=int, default=14, help='Number of days before renewal to send reminders.')
-    parser.add_argument('--send', action='store_true', help='Enable email sending. Default is dry run.')
+    parser.add_argument('--send', action='store_true', help='Enable email sending (default: dry run).')
     parser.add_argument('--smtp-server', default='smtp.example.com', help='SMTP server address.')
     parser.add_argument('--smtp-port', type=int, default=587, help='SMTP server port.')
-    parser.add_argument('--sender-email', required=True, help='Sender email address.')
-    parser.add_argument('--sender-password', required=True, help='Sender email password.')
+    parser.add_argument('--sender-email', default='', help='Sender email address.')
+    parser.add_argument('--sender-password', default='', help='Sender email password.')
+    
     args = parser.parse_args()
 
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Resolve absolute path for log file
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(base_dir)
     log_dir = os.path.join(project_root, 'logs')
     os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, 'renewal_log.txt')
+    log_path = os.path.join(log_dir, 'renewal_log.txt')
 
+    # Read and filter clients
+    clients = []
     try:
-        clients = []
-        with open(args.clients, mode='r') as f:
+        with open(args.clients, newline='') as f:
             reader = csv.DictReader(f)
-            required_cols = {'client_name', 'client_email', 'renewal_date'}
-            if not required_cols.issubset(set(reader.fieldnames or [])):
-                raise ValueError("Missing required columns in CSV")
-            
-            today = datetime.now().date()
-            cutoff = today + timedelta(days=args.days)
-            
-            seen_emails = set()
             for row in reader:
                 try:
-                    renewal_date = datetime.strptime(row['renewal_date'], '%Y-%m-%d').date()
-                except ValueError:
+                    renewal_date = datetime.strptime(row['renewal_date'], '%Y-%m-%d')
+                    if (renewal_date - datetime.now()).days <= args.days:
+                        clients.append(row)
+                except (KeyError, ValueError):
                     continue
-                    
-                if renewal_date < today:
-                    continue
-                    
-                if renewal_date <= cutoff:
-                    email = row['client_email']
-                    if email in seen_emails:
-                        print(f"Warning: Duplicate email for {row['client_name']} ({email}). Skipping.")
-                        with open(log_file, 'a') as lf:
-                            lf.write(f"[WARN] Duplicate email: {email}\n")
-                        continue
-                    seen_emails.add(email)
-                    clients.append(row)
     except FileNotFoundError:
-        print(f"Error: Clients file not found: {args.clients}")
-        with open(log_file, 'a') as lf:
-            lf.write(f"[FAIL] File not found: {args.clients}\n")
-        return
-    except ValueError as e:
-        print(f"Error reading CSV: {e}")
-        with open(log_file, 'a') as lf:
-            lf.write(f"[FAIL] CSV Error: {e}\n")
-        return
+        print(f"Error: Client file '{args.clients}' not found.")
+        sys.exit(1)
 
-    if not clients:
-        print("No upcoming renewals found within the specified timeframe.")
-        with open(log_file, 'a') as lf:
-            lf.write("[INFO] No upcoming renewals.\n")
-        return
-
-    for client in clients:
-        subject = f"Reminder: Your contract with {client['client_name']} renews in {args.days} days."
-        body = f"Reminder: Your contract with {client['client_name']} renews in {args.days} days."
-        
-        if args.send:
-            try:
-                with smtplib.SMTP(args.smtp_server, args.smtp_port) as server:
-                    server.starttls()
-                    server.login(args.sender_email, args.sender_password)
+    # Send emails or dry run
+    with open(log_path, 'a') as log:
+        for client in clients:
+            subject = f"Reminder: Your contract with {client['client_name']} renews in {args.days} days."
+            body = f"Dear {client['client_name']},\n\nReminder: Your contract with {client['client_name']} renews in {args.days} days.\n\nBest regards,\nRenewal-Rocket"
+            
+            if args.send:
+                if not args.sender_email or not args.sender_password:
+                    msg = f"Skipping {client['client_name']}: SMTP credentials not provided for sending.\n"
+                    log.write(msg)
+                    print(f"WARNING: {msg.strip()}")
+                    continue
+                
+                try:
                     msg = MIMEMultipart()
                     msg['From'] = args.sender_email
                     msg['To'] = client['client_email']
                     msg['Subject'] = subject
                     msg.attach(MIMEText(body, 'plain'))
-                    server.sendmail(args.sender_email, client['client_email'], msg.as_string())
-                print(f"[SUCCESS] Sent email to {client['client_email']}")
-                with open(log_file, 'a') as lf:
-                    lf.write(f"[SUCCESS] Sent email to {client['client_email']}\n")
-            except Exception as e:
-                print(f"[FAIL] Failed to send email to {client['client_email']}: {e}")
-                with open(log_file, 'a') as lf:
-                    lf.write(f"[FAIL] Email send failed for {client['client_email']}: {e}\n")
-        else:
-            print(f"[DRY RUN] Would send to {client['client_email']}: {subject}")
-            with open(log_file, 'a') as lf:
-                lf.write(f"[DRY RUN] Would send to {client['client_email']}: {subject}\n")
+                    
+                    with smtplib.SMTP(args.smtp_server, args.smtp_port) as server:
+                        server.starttls()
+                        server.login(args.sender_email, args.sender_password)
+                        server.sendmail(args.sender_email, client['client_email'], msg.as_string())
+                    log.write(f"SUCCESS: Sent reminder to {client['client_email']}\n")
+                    print(f"SUCCESS: Sent reminder to {client['client_email']}")
+                except Exception as e:
+                    log.write(f"FAILURE: Failed to send to {client['client_email']}: {str(e)}\n")
+                    print(f"FAILURE: Failed to send to {client['client_email']}: {str(e)}")
+            else:
+                log.write(f"DRY RUN: Would send reminder to {client['client_email']}\n")
+                print(f"DRY RUN: Would send reminder to {client['client_email']}")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -139,3 +139,7 @@ Reading existing source files to understand the argparse setup and fix the manda
 ## Turn 3 — Craft (2026-06-01 09:11 UTC)
 
 Auditing existing files to understand current state before making fixes. Need to check src/main.py, root main.py, and acceptance_tests.py to understand what needs to be changed for optional SMTP args and sys.path injection.
+
+## Turn 4 — Craft (2026-06-01 09:18 UTC)
+
+Fixed root main.py to correctly import src.main and patched src/main.py to remove required=True from SMTP arguments, resolving the exit code 2 error. Added conditional checks for SMTP credentials during send mode to prevent crashes when running in dry-run or missing-config states. Updated log path to use absolute resolution for reliability.

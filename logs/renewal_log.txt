@@ -1,0 +1,3 @@
+Skipping Acme Corp: SMTP credentials not provided for sending.
+Skipping Beta Inc: SMTP credentials not provided for sending.
+Skipping Gamma Ltd: SMTP credentials not provided for sending.
