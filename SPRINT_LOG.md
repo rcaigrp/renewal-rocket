@@ -135,3 +135,7 @@ Auditing existing project files and running acceptance tests to determine final 
 ## Turn 2 — Craft (2026-06-01 09:09 UTC)
 
 Reading existing source files to understand the argparse setup and fix the mandatory credential arguments so the acceptance command works without them.
+
+## Turn 3 — Craft (2026-06-01 09:11 UTC)
+
+Auditing existing files to understand current state before making fixes. Need to check src/main.py, root main.py, and acceptance_tests.py to understand what needs to be changed for optional SMTP args and sys.path injection.
