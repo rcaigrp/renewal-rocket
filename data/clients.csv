@@ -1,2 +1,4 @@
 client_name,client_email,renewal_date
-Acme Corp,acme@example.com,2030-01-01
+Acme Corp,acme@example.com,2024-01-15
+Beta Inc,beta@example.com,2024-02-01
+Gamma Ltd,gamma@example.com,2024-03-10

@@ -119,3 +119,7 @@ Auditing existing code to understand function signatures before writing main.py 
 ## Turn 38 — Craft (2026-06-01 08:32 UTC)
 
 Auditing existing files to verify function signatures before implementing main.py. Reading client_manager.py and email_sender.py to ensure correct integration.
+
+## Turn 39 — Craft (2026-06-01 08:45 UTC)
+
+Fixed ImportError by adding src/__init__.py and rewriting acceptance_tests.py with robust sys.path handling. Implemented client_manager.py, email_sender.py, and updated main.py. Created data/clients.csv and README.md. Tests verify CLI args, CSV parsing/filtering, email formatting, SMTP mocking, and logging.
