@@ -51,3 +51,7 @@ Parked Local-Invoice-Parser due to exhausted budget (8/5 meetings) and unresolve
 ## Turn 14 — Manager (2026-06-01 05:01 UTC)
 
 Budget exhausted (8/5). Acceptance criteria not met. Project parked due to missing system dependencies (tesseract-ocr), test mocking failures, and brittle regex logic.
+
+## Turn 15 — Manager (2026-06-01 05:07 UTC)
+
+Budget exhausted (8/5). Previous insights indicate tests fail due to mocking issues and missing tesseract-ocr. Auditing existing code to confirm state and parking the project as it cannot be completed within the current constraints.
