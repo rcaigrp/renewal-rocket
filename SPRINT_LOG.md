@@ -23,3 +23,7 @@ Audit complete. Budget exhausted (8/5). OCR dependencies (Tesseract) require sys
 ## Turn 7 — Craft (2026-06-01 04:24 UTC)
 
 Auditing existing code to understand why tests failed and fixing the linting error and test structure. The system reported 'NO TESTS FOUND' and a linting error on email_sender.py (likely a leftover). I will read the current files, then rewrite acceptance_tests.py to properly test the invoice parser logic without requiring system-level Tesseract, and fix any linting issues.
+
+## Turn 8 — Craft (2026-06-01 04:27 UTC)
+
+Budget exhausted - must audit and decide complete or park. First, I need to read existing code to understand what's broken. There's a stray src/email_sender.py (lint error) and tests not being found. Let me audit the key files first.
